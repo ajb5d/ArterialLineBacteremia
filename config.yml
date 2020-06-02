@@ -1,0 +1,4 @@
+default:
+  db:
+    ConnectionString: "Driver={PostgreSQL Driver};Server=localhost;UID=mimic;"
+    Password: !expr keyring::key_get("mimic-db-credentials")
