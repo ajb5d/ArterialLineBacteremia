@@ -105,3 +105,30 @@ colnames(model_table) <- c("Model Term", "Primary Model", "Model 1", "Model 2", 
                            "Model 5", "Model 6", "Model 7", "Model 8")
 
 model_table %>% write_csv("data/table.csv", na = '')
+
+
+only_arterial_lines <- data %>%
+    filter(arterial_line > 0)
+
+spline_model <-
+  mgcv::gam(
+    event ~ s(arterial_line, k = 10) + sapsii + age_at_admission + any_central_line + admission_type,
+    data = only_arterial_lines,
+    family = binomial,
+    method = "REML"
+  )
+
+figure_data <- tibble(arterial_line = seq(0,21,0.001),
+                      sapsii = mean(only_arterial_lines$sapsii),
+                      age_at_admission = mean(only_arterial_lines$age_at_admission),
+                      admission_type = "surgical", 
+                      any_central_line = TRUE)
+
+modelr::add_predictions(data = figure_data, model = spline_model, type = "response") %>%
+  ggplot() +
+  geom_line(aes(arterial_line, pred)) + 
+  scale_y_continuous(labels = scales::percent_format()) +
+  cowplot::theme_cowplot() + 
+  labs(x = "Arterial Line Duration (days)", y = "Probabilty of HOB", title = "Partial Dependence of HOB Probabilty on Arterial Line Duration")
+
+ggsave("data/figure.pdf")
