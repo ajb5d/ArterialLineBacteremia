@@ -24,8 +24,10 @@ match <-
   matchit(
     any_arterial_line ~ any_central_line + age_at_admission + admission_type + sepsis + sapsii,
     data,
-    method = 'nearest')
+    method = 'nearest',
+    discard = 'both',
+    caliper = 0.075)
 
-matched_data <- get_matches(match, data)
+summary(match, standardize=TRUE)
 
-write_rds(matched_data, "data/matched_data.rds")
+write_rds(match.data(match), "data/matched_data.rds")

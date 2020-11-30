@@ -112,7 +112,7 @@ only_arterial_lines <- data %>%
 
 spline_model <-
   mgcv::gam(
-    event ~ s(arterial_line, k = 10) + sapsii + age_at_admission + any_central_line + admission_type,
+    culture_positive ~ s(arterial_line, k = 10) + sapsii + age_at_admission + any_central_line + admission_type,
     data = only_arterial_lines,
     family = binomial,
     method = "REML"
